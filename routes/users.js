@@ -43,6 +43,7 @@ router.post("/login", function (req, res) {
 
 
   router.post("/update/:mail", async (req, res) => {
+    console.log(req.body)
 
     Users.findOneAndUpdate({ mail: req.params.mail },{ empresa: req.body.empresa},{ upsert: true, returnOriginal : false },
     async function (err, user) {

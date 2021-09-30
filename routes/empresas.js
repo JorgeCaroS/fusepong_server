@@ -61,5 +61,43 @@ router.post('/agregar/:empresa',async(req, res) =>{
    });
 
 
+   
+      router.post('/:editarTicket',async(req, res) => {
+         console.log(req.body)
+         
+         Empresas.findOneAndUpdate({ nombre: req.body.empresa, "proyectos.nombre": req.body.proyecto,
+          "proyectos.historias.nombre":req.body.historias,
+          "proyectos.historias.tickets._id":req.body.ticketId
+          },{ $set:{"proyectos.0.historias.$[historias].tickets":req.body.tickets}},{ upsert: true, returnOriginal : false, arrayFilters: [{ "historias.nombre": req.body.historias }], },
+          async function (err, empresa) {
+            
+            if (err) {
+               return res.status(500, { error: err });
+            } else {     
+                console.log(empresa)   
+               return res.status(200).json(empresa);
+            }
+         }
+       ); 
+    });
+
+
+
+   async function getEmpresa(req, res, next) {
+      let empresas
+    try {
+      empresas = await Empresas.findOne({nombre:req.body.empresa, "proyectos.nombre": req.body.proyecto, "proyectos.historias.nombre":req.body.historias,
+       "proyectos.historias.tickets._id":req.body.ticketId});
+      if (empresas == null) {
+        return res.status(404).json({ message: "No se encontró el pedido" });
+      }
+    } catch (err) {
+        return res.status(500).json({message: err.message})
+    }
+    res.empresas = empresas;
+    next();
+  }
+
+
 
 module.exports = router;
