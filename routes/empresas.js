@@ -47,7 +47,7 @@ router.post('/agregar/:empresa',async(req, res) =>{
    router.post('/agregarTicket/:empresa',async(req, res) =>{
     console.log(req.params); 
     console.log(req.body);  
-     Empresas.findOneAndUpdate({ nombre: req.params.empresa, "proyectos.nombre": req.body.proyecto, "proyectos.historias.nombre":req.body.historias },{ $push:{"proyectos.0.historias.0.tickets":req.body.tickets}},{ upsert: true, returnOriginal : false },
+     Empresas.findOneAndUpdate({ nombre: req.params.empresa, "proyectos.nombre": req.body.proyecto, "proyectos.historias.nombre":req.body.historias },{ $push:{"proyectos.0.historias.$[historias].tickets":req.body.tickets}},{ upsert: true, returnOriginal : false, arrayFilters: [{ "historias.nombre": req.body.historias }], },
         async function (err, empresa) {
             
           if (err) {
